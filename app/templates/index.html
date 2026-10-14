@@ -51,16 +51,80 @@ button:disabled{opacity:.5}
 </section>
 </main>
 <script>
-const gecmis=[];const kutu=document.getElementById('mesajlar');
-function ekle(t,c){const d=document.createElement('div');d.className='m '+c;d.textContent=t;kutu.appendChild(d);kutu.scrollTop=kutu.scrollHeight;return d}
-document.getElementById('sohbet').onsubmit=async e=>{e.preventDefault();const g=document.getElementById('girdi');const mesaj=g.value.trim();if(!mesaj)return;
- g.value='';ekle(mesaj,'ben');const b=ekle('...','ai');const btn=e.target.querySelector('button');btn.disabled=true;
- try{const r=await fetch('/api/sohbet',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({mesaj,gecmis})});const j=await r.json();
-  b.textContent=j.basari?j.cevap:j.hata;if(j.basari){gecmis.push({role:'user',content:mesaj},{role:'assistant',content:j.cevap})}}
- catch{b.textContent='Bağlantı hatası, lütfen tekrar deneyin.'}btn.disabled=false};
-document.getElementById('demo').onsubmit=async e=>{e.preventDefault();const s=document.getElementById('sonuc');
- const veri=Object.fromEntries(new FormData(e.target));
- try{const r=await fetch('/api/leads',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(veri)});const j=await r.json();
-  s.textContent=j.basari?j.mesaj:j.hata;s.style.color=j.basari?'#0F766E':'#b91c1c';if(j.basari)e.target.reset()}
- catch{s.textContent='Bağlantı hatası.'}};
+let gecmis = [];
+
+function mesajEkle(metin, kimden) {
+  let balon = document.createElement("div");
+  balon.className = "m " + kimden;
+  balon.textContent = metin;
+  let kutu = document.getElementById("mesajlar");
+  kutu.appendChild(balon);
+  kutu.scrollTop = kutu.scrollHeight;
+  return balon;
+}
+
+document.getElementById("sohbet").addEventListener("submit", async function (olay) {
+  olay.preventDefault();
+  let girdi = document.getElementById("girdi");
+  let mesaj = girdi.value.trim();
+  if (mesaj === "") return;
+
+  girdi.value = "";
+  mesajEkle(mesaj, "ben");
+  let cevapBalonu = mesajEkle("...", "ai");
+
+  try {
+    let yanit = await fetch("/api/sohbet", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mesaj: mesaj, gecmis: gecmis })
+    });
+    let veri = await yanit.json();
+
+    if (veri.basari) {
+      cevapBalonu.textContent = veri.cevap;
+      gecmis.push({ role: "user", content: mesaj });
+      gecmis.push({ role: "assistant", content: veri.cevap });
+    } else {
+      cevapBalonu.textContent = veri.hata;
+    }
+  } catch (hata) {
+    cevapBalonu.textContent = "Bağlantı hatası, lütfen tekrar deneyin.";
+  }
+});
+
+document.getElementById("demo").addEventListener("submit", async function (olay) {
+  olay.preventDefault();
+  let form = olay.target;
+  let sonuc = document.getElementById("sonuc");
+
+  let veri = {
+    isim: form.isim.value,
+    telefon: form.telefon.value,
+    sirket: form.sirket.value,
+    ekip_buyuklugu: form.ekip_buyuklugu.value,
+    eposta: form.eposta.value,
+    mesaj: form.mesaj.value
+  };
+
+  try {
+    let yanit = await fetch("/api/leads", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(veri)
+    });
+    let cevap = await yanit.json();
+
+    if (cevap.basari) {
+      sonuc.textContent = cevap.mesaj;
+      sonuc.style.color = "#0F766E";
+      form.reset();
+    } else {
+      sonuc.textContent = cevap.hata;
+      sonuc.style.color = "#b91c1c";
+    }
+  } catch (hata) {
+    sonuc.textContent = "Bağlantı hatası.";
+  }
+});
 </script></body></html>

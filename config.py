@@ -1,4 +1,3 @@
-# config.py - Modul A: tum ayarlarin tek kaynagi
 import os
 from dotenv import load_dotenv
 
@@ -30,7 +29,7 @@ class Config:
     GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
     DATABASE_URL = os.environ.get("DATABASE_URL", "leads.db")
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*")
-    PORT = int(os.environ.get("PORT", 5001))  # 5000'i macOS AirPlay isgal ediyor
+    PORT = int(os.environ.get("PORT", 5001))
     BUSINESS_CONTEXT = BUSINESS_CONTEXT
     DEBUG = False
 

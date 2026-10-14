@@ -17,9 +17,35 @@ th,td{padding:10px 12px;text-align:left;border-bottom:1px solid #e2e8f0}th{backg
 <table><thead><tr><th>Tarih</th><th>Ad Soyad</th><th>Telefon</th><th>Şirket</th><th>Ekip</th><th>E-posta</th><th>Mesaj</th></tr></thead><tbody id="liste"></tbody></table>
 <div id="bos" class="bos" hidden>Henüz demo talebi yok.</div></main>
 <script>
-fetch('/api/leads').then(r=>r.json()).then(j=>{const l=j.leadler||[];document.getElementById('toplam').textContent=l.length;
- document.getElementById('buyuk').textContent=l.filter(x=>x.ekip_buyuklugu==='51-200'||x.ekip_buyuklugu==='200+').length;
- if(!l.length){document.getElementById('bos').hidden=false;return}
- const tb=document.getElementById('liste');l.forEach(x=>{const tr=document.createElement('tr');
-  [x.tarih,x.isim,x.telefon,x.sirket,x.ekip_buyuklugu,x.eposta||'',x.mesaj||''].forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td)});tb.appendChild(tr)})});
+fetch("/api/leads")
+  .then(function (yanit) { return yanit.json(); })
+  .then(function (veri) {
+    let leadler = veri.leadler || [];
+
+    document.getElementById("toplam").textContent = leadler.length;
+    let buyukEkip = 0;
+    for (let lead of leadler) {
+      if (lead.ekip_buyuklugu === "51-200" || lead.ekip_buyuklugu === "200+") {
+        buyukEkip = buyukEkip + 1;
+      }
+    }
+    document.getElementById("buyuk").textContent = buyukEkip;
+
+    if (leadler.length === 0) {
+      document.getElementById("bos").hidden = false;
+      return;
+    }
+
+    let tablo = document.getElementById("liste");
+    for (let lead of leadler) {
+      let satir = document.createElement("tr");
+      let degerler = [lead.tarih, lead.isim, lead.telefon, lead.sirket, lead.ekip_buyuklugu, lead.eposta || "", lead.mesaj || ""];
+      for (let deger of degerler) {
+        let hucre = document.createElement("td");
+        hucre.textContent = deger;
+        satir.appendChild(hucre);
+      }
+      tablo.appendChild(satir);
+    }
+  });
 </script></body></html>
