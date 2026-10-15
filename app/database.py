@@ -2,12 +2,14 @@ import sqlite3
 from flask import current_app
 
 
+# veritabanina baglanir, satirlar sozluk gibi okunabilsin diye row_factory var
 def get_db():
     baglanti = sqlite3.connect(current_app.config["DATABASE_URL"])
     baglanti.row_factory = sqlite3.Row
     return baglanti
 
 
+# uygulama acilirken leads tablosu yoksa olusturur
 def init_db(app):
     with app.app_context():
         baglanti = get_db()
@@ -27,6 +29,8 @@ def init_db(app):
         baglanti.close()
 
 
+# demo formundan gelen talebi kaydeder
+# soru isaretleri sayesinde veri sorguya direkt yazilmiyor, sql injection olmuyor
 def lead_ekle(isim, telefon, sirket, ekip_buyuklugu, eposta, mesaj):
     baglanti = get_db()
     baglanti.execute(
@@ -37,6 +41,7 @@ def lead_ekle(isim, telefon, sirket, ekip_buyuklugu, eposta, mesaj):
     baglanti.close()
 
 
+# panel icin butun talepleri yeniden eskiye dogru getirir
 def tum_leadler():
     baglanti = get_db()
     satirlar = baglanti.execute("SELECT * FROM leads ORDER BY id DESC").fetchall()

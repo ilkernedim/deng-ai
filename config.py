@@ -1,8 +1,10 @@
 import os
 from dotenv import load_dotenv
 
+# .env dosyasindaki gizli anahtarlari okur, bu dosya githuba gitmiyor
 load_dotenv()
 
+# asistanin kisiligi, modele system rolu olarak gonderiliyor
 BUSINESS_CONTEXT = """Sen DENG-AI'in yapay zeka satis danismanisin. DENG-AI,
 proje yoneticileri icin yapay zeka ile calisan bir kapasite ve teslim tarihi
 tahmin asistanidir. Ekibin gecmis Jira ve takvim verisinden gercek is hizini
@@ -22,6 +24,7 @@ hepsini birden sorma. Turkce, kisa ve sakin yaz. Konusmanin sonunda ad, telefon
 ve sirket adi birakarak demo talep etmesini oner."""
 
 
+# butun ayarlar burada toplu duruyor, degerler once ortam degiskeninden okunuyor
 class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "gelistirme-anahtari")
     GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
@@ -42,6 +45,7 @@ class ProductionConfig(Config):
     DEBUG = False
 
 
+# renderda FLASK_ENV production oldugu icin orada ProductionConfig secilir
 def get_config():
     if os.environ.get("FLASK_ENV") == "production":
         return ProductionConfig

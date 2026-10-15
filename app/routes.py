@@ -3,6 +3,7 @@ from flask import Blueprint, jsonify, render_template, request
 from . import database
 from .services.ai_service import ai_service, AIServiceError
 
+# sayfalar html donduruyor, api ise json donduruyor
 sayfalar = Blueprint("sayfalar", __name__)
 api = Blueprint("api", __name__, url_prefix="/api")
 
@@ -17,17 +18,20 @@ def dashboard():
     return render_template("dashboard.html")
 
 
+# render ve wix calisiyor mu diye kontrol icin
 @sayfalar.route("/health")
 def health():
     return jsonify({"basari": True, "durum": "calisiyor"})
 
 
+# wixteki sohbet kutusu buraya mesaj gonderiyor
 @api.route("/sohbet", methods=["POST"])
 def sohbet():
     veri = request.get_json() or {}
     mesaj = veri.get("mesaj", "").strip()
     gecmis = veri.get("gecmis", [])
 
+    # bos mesaj gelirse modele hic gitmiyor
     if mesaj == "":
         return jsonify({"basari": False, "hata": "Mesaj boş olamaz."}), 400
 
@@ -39,6 +43,7 @@ def sohbet():
     return jsonify({"basari": True, "cevap": cevap})
 
 
+# demo formu buraya geliyor, kayit olursa 201 doner
 @api.route("/leads", methods=["POST"])
 def lead_kaydet():
     veri = request.get_json() or {}
@@ -61,6 +66,7 @@ def lead_kaydet():
     return jsonify({"basari": True, "mesaj": "Talebiniz alındı, en kısa sürede sizinle iletişime geçeceğiz."}), 201
 
 
+# yonetim paneli talepleri buradan cekiyor
 @api.route("/leads", methods=["GET"])
 def lead_listele():
     try:
@@ -71,6 +77,7 @@ def lead_listele():
     return jsonify({"basari": True, "leadler": leadler})
 
 
+# olmayan bir adrese gidilirse html yerine json hata donsun
 @api.app_errorhandler(404)
 def bulunamadi(hata):
     return jsonify({"basari": False, "hata": "Sayfa bulunamadı."}), 404
