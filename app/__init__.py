@@ -14,7 +14,7 @@ def create_app():
     app.json.ensure_ascii = False
 
     # wix sitesi baska adreste oldugu icin istek atabilmesi lazim
-    CORS(app, origins=app.config["CORS_ORIGINS"])
+    CORS(app,)
 
     init_db(app)
 
