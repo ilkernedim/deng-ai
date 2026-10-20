@@ -1,21 +1,16 @@
-from flask import Blueprint, current_app, jsonify, render_template, request
+from flask import Blueprint, current_app, jsonify, request
 
 from . import database
 from .services.ai_service import ai_service, AIServiceError
 
-# sayfalar html donduruyor, api ise json donduruyor
+# arayuz yok, sadece json donduren uc noktalar var
 sayfalar = Blueprint("sayfalar", __name__)
 api = Blueprint("api", __name__, url_prefix="/api")
 
 
 @sayfalar.route("/")
 def index():
-    return render_template("index.html")
-
-
-@sayfalar.route("/dashboard")
-def dashboard():
-    return render_template("dashboard.html")
+    return jsonify({"basari": True, "durum": "calisiyor"})
 
 
 # render ve wix calisiyor mu diye kontrol icin
