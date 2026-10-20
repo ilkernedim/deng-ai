@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, render_template, request
+from flask import Blueprint, current_app, jsonify, render_template, request
 
 from . import database
 from .services.ai_service import ai_service, AIServiceError
@@ -37,7 +37,9 @@ def sohbet():
 
     try:
         cevap = ai_service.yanit_uret(mesaj, gecmis)
-    except AIServiceError:
+    except AIServiceError as hata:
+        # render loglarinda sebebi gorunsun diye
+        current_app.logger.error("[sohbet] yapay zeka servisi hatasi: %s", hata)
         return jsonify({"basari": False, "hata": "Danışman şu anda yanıt veremiyor, lütfen tekrar deneyin."}), 503
 
     return jsonify({"basari": True, "cevap": cevap})
@@ -61,6 +63,7 @@ def lead_kaydet():
     try:
         database.lead_ekle(isim, telefon, sirket, ekip_buyuklugu, eposta, mesaj)
     except Exception:
+        current_app.logger.exception("[lead_kaydet] veritabanina yazilamadi")
         return jsonify({"basari": False, "hata": "Kayıt sırasında bir hata oluştu."}), 500
 
     return jsonify({"basari": True, "mesaj": "Talebiniz alındı, en kısa sürede sizinle iletişime geçeceğiz."}), 201
@@ -72,6 +75,7 @@ def lead_listele():
     try:
         leadler = database.tum_leadler()
     except Exception:
+        current_app.logger.exception("[lead_listele] kayitlar okunamadi")
         return jsonify({"basari": False, "hata": "Kayıtlar okunamadı."}), 500
 
     return jsonify({"basari": True, "leadler": leadler})
