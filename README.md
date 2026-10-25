@@ -34,9 +34,17 @@ geçerli imzalı bir anahtar döner. Panel bu anahtarı `Authorization: Bearer <
 başlığıyla `GET /api/leads` isteğine ekler. Anahtarsız veya süresi dolmuş istek 401 alır.
 Aynı IP 5 kez yanlış girerse 10 dakika boyunca 429 alır.
 
-Ayarlar ortam değişkenlerinden okunur: `ADMIN_USER` (varsayılan `admin`) ve
-`ADMIN_PASSWORD` (`config.py` içinde demo için varsayılan değeri var, Render'da
-ortam değişkeni olarak tanımlanırsa o geçerli olur).
+Şifre koda düz yazı olarak girmez, hash (pbkdf2-sha256) olarak saklanır. Ayarlar ortam
+değişkenlerinden okunur: `ADMIN_USER` (varsayılan `admin`), `ADMIN_PASSWORD_HASH` (öncelikli)
+ve `ADMIN_PASSWORD` (düz yazı, Render'daki eski ayar için). İkisi de tanımlı değilse
+`config.py` içindeki demo hash'i geçerlidir. Yeni şifre için hash üretmek:
+
+```bash
+./venv/bin/python -c "from werkzeug.security import generate_password_hash as g; print(g('yeni-sifre', method='pbkdf2:sha256:600000'))"
+```
+
+Çıkan değer Render'da `ADMIN_PASSWORD_HASH` olarak tanımlanır. Şifre değişince eski anahtarlar
+geçersiz olur.
 
 ## Çalıştırma
 

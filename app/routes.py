@@ -69,7 +69,7 @@ def lead_kaydet():
 @api.route("/admin/giris", methods=["POST"])
 def admin_giris():
     if not auth_service.aktif_mi():
-        current_app.logger.error("[admin_giris] ADMIN_PASSWORD ayarlanmamis, giris kapali")
+        current_app.logger.error("[admin_giris] yonetici sifre ayari bulunamadi, giris kapali")
         return jsonify({"basari": False, "hata": "Yönetici girişi şu an kapalı."}), 503
 
     ip = request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip()
