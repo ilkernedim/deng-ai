@@ -31,6 +31,11 @@ class Config:
     GROQ_MODEL = os.environ.get("GROQ_MODEL", "qwen/qwen3.8-27b")
     GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
     DATABASE_URL = os.environ.get("DATABASE_URL", "leads.db")
+    # yonetim paneli girisi, sifre bos birakilirsa giris kapali olur
+    ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
+    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+    # giris anahtari 8 saat gecerli
+    ADMIN_ANAHTAR_SURESI = 8 * 60 * 60
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*")
     PORT = int(os.environ.get("PORT", 5001))
     BUSINESS_CONTEXT = BUSINESS_CONTEXT

@@ -2,6 +2,7 @@ from flask import Blueprint, current_app, jsonify, request
 
 from . import database
 from .services.ai_service import ai_service, AIServiceError
+from .services.auth_service import auth_service
 
 # arayuz yok, sadece json donduren uc noktalar var
 sayfalar = Blueprint("sayfalar", __name__)
@@ -64,9 +65,37 @@ def lead_kaydet():
     return jsonify({"basari": True, "mesaj": "Talebiniz alındı, en kısa sürede sizinle iletişime geçeceğiz."}), 201
 
 
-# yonetim paneli talepleri buradan cekiyor
+# yonetim girisi, dogruysa panelin kullanacagi anahtari doner
+@api.route("/admin/giris", methods=["POST"])
+def admin_giris():
+    if not auth_service.aktif_mi():
+        current_app.logger.error("[admin_giris] ADMIN_PASSWORD ayarlanmamis, giris kapali")
+        return jsonify({"basari": False, "hata": "Yönetici girişi şu an kapalı."}), 503
+
+    ip = request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip()
+    if auth_service.engelli_mi(ip):
+        return jsonify({"basari": False, "hata": "Çok fazla hatalı deneme. Lütfen biraz sonra tekrar deneyin."}), 429
+
+    veri = request.get_json(silent=True) or {}
+    kullanici = str(veri.get("kullanici", "")).strip()
+    sifre = str(veri.get("sifre", ""))
+
+    if not auth_service.giris_dogru_mu(kullanici, sifre):
+        auth_service.hata_kaydet(ip)
+        return jsonify({"basari": False, "hata": "Kullanıcı adı veya şifre hatalı."}), 401
+
+    auth_service.hata_temizle(ip)
+    return jsonify({"basari": True, "anahtar": auth_service.anahtar_uret()})
+
+
+# yonetim paneli talepleri buradan cekiyor, gecerli anahtar sart
 @api.route("/leads", methods=["GET"])
 def lead_listele():
+    baslik = request.headers.get("Authorization", "")
+    anahtar = baslik[7:] if baslik.startswith("Bearer ") else ""
+    if not auth_service.anahtar_gecerli_mi(anahtar):
+        return jsonify({"basari": False, "hata": "Yetkisiz erişim."}), 401
+
     try:
         leadler = database.tum_leadler()
     except Exception:
