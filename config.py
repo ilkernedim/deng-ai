@@ -33,7 +33,7 @@ class Config:
     DATABASE_URL = os.environ.get("DATABASE_URL", "leads.db")
     # yonetim paneli girisi, demo icin varsayilan sifre var, renderda ADMIN_PASSWORD ile degistirilebilir
     ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
-    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "dengai2026")
+    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "deng27")
     # giris anahtari 8 saat gecerli
     ADMIN_ANAHTAR_SURESI = 8 * 60 * 60
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*")
