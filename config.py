@@ -31,9 +31,9 @@ class Config:
     GROQ_MODEL = os.environ.get("GROQ_MODEL", "qwen/qwen3.8-27b")
     GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
     DATABASE_URL = os.environ.get("DATABASE_URL", "leads.db")
-    # yonetim paneli girisi, sifre bos birakilirsa giris kapali olur
+    # yonetim paneli girisi, demo icin varsayilan sifre var, renderda ADMIN_PASSWORD ile degistirilebilir
     ADMIN_USER = os.environ.get("ADMIN_USER", "admin")
-    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "")
+    ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "dengai2026")
     # giris anahtari 8 saat gecerli
     ADMIN_ANAHTAR_SURESI = 8 * 60 * 60
     CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "*")
